@@ -9,6 +9,9 @@ bool Engine::Startup()
 	if (!StartupSDL())
 		return false;
 
+	m_Grid = new Grid();
+	m_Grid->Init();
+
 	m_Running = true;
 }
 
@@ -21,24 +24,18 @@ void Engine::Run()
 		{
 			if (e.type == SDL_QUIT)
 				m_Running = false;
+			else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT)
+			{
+				int clicked_ID = m_Grid->findBlock(e.button.x, e.button.y);
+				if (clicked_ID != -1)
+					m_Grid->onBlockClick(clicked_ID);
+			}
 		}
 
 		// Fill surface with white background
 		SDL_FillRect(m_ScreenSurface, NULL, SDL_MapRGB(m_ScreenSurface->format, 0xFF, 0xFF, 0xFF));
 
-		for (int ROW = 0; ROW < GRID_COUNT; ROW++)
-		{
-			for (int COL = 0; COL < GRID_COUNT; COL++)
-			{
-				SDL_Rect boxRect;
-				boxRect.x = ROW * (GRID_WIDTH + GRID_SEPERATION);
-				boxRect.y = COL * (GRID_WIDTH + GRID_SEPERATION);
-				boxRect.w = GRID_WIDTH;
-				boxRect.h = GRID_WIDTH;
-
-				SDL_FillRect(m_ScreenSurface, &boxRect, SDL_MapRGB(m_ScreenSurface->format, 0, 0, 0));
-			}
-		}
+		m_Grid->drawGridOntoSurface(m_ScreenSurface);
 
 		SDL_UpdateWindowSurface(m_Window);
 	}

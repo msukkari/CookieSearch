@@ -66,7 +66,7 @@ bool Engine::StartupSDL()
 {
 	if (SDL_Init(SDL_INIT_VIDEO) >= 0)
 	{
-		m_Window = SDL_CreateWindow("SDL", SDL_WINDOWPOS_UNDEFINED,
+		m_Window = SDL_CreateWindow("Cookie Search", SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED,
 			SCREEN_WIDTH,
 			SCREEN_WIDTH,

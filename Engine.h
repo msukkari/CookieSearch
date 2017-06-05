@@ -26,7 +26,7 @@ public:
 	SDL_Window* getWindow() { return m_Window; }
 	SDL_Surface* getScreenSurface() { return m_ScreenSurface; }
 
-	static const int GRID_COUNT = 20;
+	static const int GRID_COUNT = 30;
 	static const int GRID_WIDTH = 20;
 	static const int GRID_SEPERATION = 2;
 	static const int SCREEN_WIDTH = (GRID_WIDTH + GRID_SEPERATION) * GRID_COUNT - GRID_SEPERATION;
@@ -37,6 +37,7 @@ private:
 	static Engine* s_pInstance;
 
 	bool m_Running;
+	bool m_MouseButtonDown;
 
 	bool StartupSDL();
 	void ShutdownSDL();

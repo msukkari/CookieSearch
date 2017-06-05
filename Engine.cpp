@@ -10,9 +10,10 @@ bool Engine::Startup()
 		return false;
 
 	m_Grid = new Grid();
-	m_Grid->Init();
+	m_Grid->Init(GRID_COUNT, GRID_WIDTH, GRID_SEPERATION);
 
 	m_Running = true;
+	m_MouseButtonDown = false;
 }
 
 void Engine::Run()
@@ -26,18 +27,34 @@ void Engine::Run()
 				m_Running = false;
 			else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT)
 			{
+				/*
 				int clicked_ID = m_Grid->findBlock(e.button.x, e.button.y);
 				if (clicked_ID != -1)
 					m_Grid->onBlockClick(clicked_ID);
+				*/
+				m_MouseButtonDown = true;
+			}
+			else if (e.type == SDL_MOUSEBUTTONUP && e.button.button == SDL_BUTTON_LEFT)
+			{
+				m_MouseButtonDown = false;
+			}
+			else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE)
+			{
+				std::vector<int> path = m_Grid->findShortestPath();
 			}
 		}
 
-		// Fill surface with white background
-		SDL_FillRect(m_ScreenSurface, NULL, SDL_MapRGB(m_ScreenSurface->format, 0xFF, 0xFF, 0xFF));
+		if (m_MouseButtonDown)
+		{
+			int x, y;
+			SDL_GetMouseState(&x, &y);
 
-		m_Grid->drawGridOntoSurface(m_ScreenSurface);
+			int clicked_ID = m_Grid->findBlock(x, y);
+			if (clicked_ID != -1)
+				m_Grid->onBlockClick(clicked_ID);
+		}
 
-		SDL_UpdateWindowSurface(m_Window);
+		m_Grid->drawGrid();
 	}
 }
 void Engine::Shutdown()

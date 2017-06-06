@@ -168,15 +168,15 @@ std::vector<int> Grid::findShortestPath()
 			b->m_Pre = -1;
 			b->m_BlockColor = Block::WHITE;
 
-			q.insert({ b->m_Distance, b->m_ID });
+			//q.insert({ b->m_Distance, b->m_ID });
 		}
 	}
 
-	int debugCount = 0;
+	q.insert({ 0, m_Source });
+
 	bool run = true;
 	while (!q.empty() && run)
 	{
-		debugCount++;
 		int curID = q.begin()->second;
 		q.erase(q.begin());
 
@@ -196,7 +196,6 @@ std::vector<int> Grid::findShortestPath()
 				{
 					// Relax that edge (man)
 					q.erase({ adjBlock->m_Distance, adjBlock->m_ID });
-
 					adjBlock->m_Distance = curBlock->m_Distance + 1;
 					q.insert({ curBlock->m_Distance + 1, adjBlock->m_ID });
 

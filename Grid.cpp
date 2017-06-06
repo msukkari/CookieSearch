@@ -142,12 +142,22 @@ int Grid::findBlock(int x, int y)
 	return -1;
 }
 
-void Grid::onBlockClick(int ID)
+void Grid::onBlockClick(int ID, int button)
 {
 	if (ID != m_Source && ID != m_Destination) 
 	{
-		m_BlockList[ID]->m_Color = SDL_MapRGB(Engine::GetInstance()->getScreenSurface()->format, 0x69, 0x69, 0x69);
-		m_BlockList[ID]->m_Blocked = true;
+		Block* block = m_BlockList[ID];
+
+		if (button == 0)
+		{
+			m_BlockList[ID]->m_Color = SDL_MapRGB(Engine::GetInstance()->getScreenSurface()->format, 0x69, 0x69, 0x69);
+			m_BlockList[ID]->m_Blocked = true;
+		}
+		else if (button == 1 && block->m_Blocked)
+		{
+			m_BlockList[ID]->m_Color = SDL_MapRGB(Engine::GetInstance()->getScreenSurface()->format, 0, 0, 0);
+			m_BlockList[ID]->m_Blocked = false;
+		}
 	}
 
 }
@@ -155,9 +165,7 @@ void Grid::onBlockClick(int ID)
 std::vector<int> Grid::findShortestPath()
 {
 	std::vector<int> path;
-
 	std::set<std::pair<int, int>> q;
-	//q.insert(std::pair<int, int>(0, m_Source));
 
 	createAdjLists();
 
@@ -168,11 +176,14 @@ std::vector<int> Grid::findShortestPath()
 			b->m_Distance = b->m_ID == m_Source ? 0 : INT_MAX;
 			b->m_Pre = -1;
 			b->m_BlockColor = Block::WHITE;
-
-			//q.insert({ b->m_Distance, b->m_ID });
+			if (b->m_Color == 14737632 || b->m_Color == 65280) // if the color is light grey or green (ie. reset color of the grid for the new search)
+			{
+				b->m_Color = SDL_MapRGB(Engine::GetInstance()->getScreenSurface()->format, 0, 0, 0);
+			}
 		}
 	}
 
+	// To start, the queue will only containt the src block
 	q.insert({ 0, m_Source });
 
 	bool run = true;
@@ -181,9 +192,9 @@ std::vector<int> Grid::findShortestPath()
 		int curID = q.begin()->second;
 		q.erase(q.begin());
 
-		Block* curBlock = m_BlockList[curID]; 
+		Block* curBlock = m_BlockList[curID];
 
-		if(curBlock->m_ID != m_Source && curBlock->m_ID != m_Destination)
+		if (curBlock->m_ID != m_Source && curBlock->m_ID != m_Destination)
 			curBlock->m_Color = SDL_MapRGB(Engine::GetInstance()->getScreenSurface()->format, 0x4F, 0x4F, 0x4F);
 
 		drawGrid();
@@ -218,13 +229,15 @@ std::vector<int> Grid::findShortestPath()
 	}
 
 	// Step back from destination to find shortest path
-	assert(m_BlockList[m_Destination]->m_Pre >= 0 && m_BlockList[m_Destination]->m_Pre < m_BlockList.size());
-	Block* block = m_BlockList[m_BlockList[m_Destination]->m_Pre];
-	while (block->m_Pre != -1)
+	if (m_BlockList[m_Destination]->m_Pre >= 0 && m_BlockList[m_Destination]->m_Pre < m_BlockList.size())
 	{
-		path.push_back(block->m_ID);
-		block->m_Color = SDL_MapRGB(Engine::GetInstance()->getScreenSurface()->format, 0, 0xFF, 0);
-		block = m_BlockList[block->m_Pre];
+		Block* block = m_BlockList[m_BlockList[m_Destination]->m_Pre];
+		while (block->m_Pre != -1)
+		{
+			path.push_back(block->m_ID);
+			block->m_Color = SDL_MapRGB(Engine::GetInstance()->getScreenSurface()->format, 0, 0xFF, 0);
+			block = m_BlockList[block->m_Pre];
+		}
 	}
 
 

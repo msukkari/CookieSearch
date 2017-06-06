@@ -15,7 +15,7 @@ public:
 	void drawGrid();
 	int findBlock(int x, int y);
 
-	void onBlockClick(int ID);
+	void onBlockClick(int ID, int button); // 0 is left 1 is right
 	void createAdjLists();
 
 	std::vector<int> findShortestPath();

@@ -13,7 +13,8 @@ bool Engine::Startup()
 	m_Grid->Init(GRID_COUNT, GRID_WIDTH, GRID_SEPERATION);
 
 	m_Running = true;
-	m_MouseButtonDown = false;
+	m_LeftMouseButtonDown = false;
+	m_RightMouseButtonDown = false;
 }
 
 void Engine::Run()
@@ -26,32 +27,26 @@ void Engine::Run()
 			if (e.type == SDL_QUIT)
 				m_Running = false;
 			else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT)
-			{
-				/*
-				int clicked_ID = m_Grid->findBlock(e.button.x, e.button.y);
-				if (clicked_ID != -1)
-					m_Grid->onBlockClick(clicked_ID);
-				*/
-				m_MouseButtonDown = true;
-			}
+				m_LeftMouseButtonDown = true;
 			else if (e.type == SDL_MOUSEBUTTONUP && e.button.button == SDL_BUTTON_LEFT)
-			{
-				m_MouseButtonDown = false;
-			}
+				m_LeftMouseButtonDown = false;
+			else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_RIGHT)
+				m_RightMouseButtonDown = true;
+			else if (e.type == SDL_MOUSEBUTTONUP && e.button.button == SDL_BUTTON_RIGHT)
+				m_RightMouseButtonDown = false;
 			else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE)
-			{
 				std::vector<int> path = m_Grid->findShortestPath();
-			}
 		}
 
-		if (m_MouseButtonDown)
+		if (m_LeftMouseButtonDown || m_RightMouseButtonDown)
 		{
 			int x, y;
 			SDL_GetMouseState(&x, &y);
 
+			int button = m_LeftMouseButtonDown ? 0 : 1; // Left button is prioritized if both buttons are pressed
 			int clicked_ID = m_Grid->findBlock(x, y);
 			if (clicked_ID != -1)
-				m_Grid->onBlockClick(clicked_ID);
+				m_Grid->onBlockClick(clicked_ID, button);
 		}
 
 		m_Grid->drawGrid();

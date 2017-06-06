@@ -37,7 +37,8 @@ private:
 	static Engine* s_pInstance;
 
 	bool m_Running;
-	bool m_MouseButtonDown;
+	bool m_LeftMouseButtonDown;
+	bool m_RightMouseButtonDown;
 
 	bool StartupSDL();
 	void ShutdownSDL();

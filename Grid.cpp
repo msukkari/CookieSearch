@@ -3,6 +3,7 @@
 #include <vector>
 #include <functional>
 #include <algorithm>
+#include <assert.h>
 
 #include "Engine.h"
 #include "Grid.h"
@@ -32,7 +33,7 @@ void Grid::createAdjLists()
 			block->m_AdjList.push_back(right);
 
 		int bot = block->m_ID + COUNT;  // bottom
-		if (bot < (COUNT * COUNT) && !m_BlockList[bot]->m_Blocked)
+		if (bot < (m_BlockList.size()) && !m_BlockList[bot]->m_Blocked)
 			block->m_AdjList.push_back(bot);
 
 		/*
@@ -60,8 +61,8 @@ void Grid::Init(int COUNT, int WIDTH, int SEP)
 {
 	srand(time(NULL));
 
-	m_Source = rand() % (WIDTH * WIDTH - 1);
-	m_Destination = rand() % (WIDTH * WIDTH- 1);
+	m_Source = rand() % (COUNT * COUNT - 1);
+	m_Destination = rand() % (COUNT * COUNT - 1);
 
 
 	for (int ROW = 0; ROW < COUNT; ROW++)
@@ -217,6 +218,7 @@ std::vector<int> Grid::findShortestPath()
 	}
 
 	// Step back from destination to find shortest path
+	assert(m_BlockList[m_Destination]->m_Pre >= 0 && m_BlockList[m_Destination]->m_Pre < m_BlockList.size());
 	Block* block = m_BlockList[m_BlockList[m_Destination]->m_Pre];
 	while (block->m_Pre != -1)
 	{

@@ -183,7 +183,7 @@ std::vector<int> Grid::findShortestPath()
 		}
 	}
 
-	// To start, the queue will only containt the src block
+	// To start, the queue will only contain the src block
 	q.insert({ 0, m_Source });
 
 	bool run = true;
